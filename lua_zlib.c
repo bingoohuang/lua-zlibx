@@ -1239,7 +1239,9 @@ static int lz_crc32(lua_State *L) {
     return lz_checksum_new(L, crc32, crc32_combine);
 }
 
+#include "base64.c"
 #include "sm3.c"
+
 
 static const luaL_Reg zlib_functions[] = {
     { "deflate", lz_deflate_new },
@@ -1247,7 +1249,11 @@ static const luaL_Reg zlib_functions[] = {
     { "adler32", lz_adler32     },
     { "crc32",   lz_crc32       },
     { "sm3",     l_sm3_update   },
+    { "sm3_base64",     l_sm3_update_base64   },
     { "sm3hmac", l_sm3hmac_update},
+    { "sm3hmac_base64", l_sm3hmac_update_base64},
+    { "base64_encode", lua_f_base64_encode},
+    { "base64_decode", lua_f_base64_decode},  
     
 #ifdef LZLIB_COMPAT
     { "compress",   lzlib_compress   },

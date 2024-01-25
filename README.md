@@ -170,8 +170,11 @@ To use this shim add the `-DLZLIB_COMPAT` compiler flag.
 ## sm3/sm3hmac
 
 - `local sm3 = lz.sm3("lqlq666lqlq946")`
+- `local sm3_base64 = lz.sm3_base64("lqlq666lqlq946")`
 - `local sm3hmac = lz.sm3hmac("lqlq666lqlq946", "123")`
-
+- `local sm3hmac_base64 = lz.sm3hmac_base64("lqlq666lqlq946", "123")`
+- `local encoded = lz.base64_encode(raw)`
+- `local raw = lz.base64_decode(encoded)`
 
 examples:
 

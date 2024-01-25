@@ -190,16 +190,25 @@ function tohex(str)
 end
 
 local function test_sm3() 
-   local encodeStr = lz.sm3("lqlq666lqlq946")
-   local sm3hex =    tohex(encodeStr)
-   ok("E64FD76F4078E51DCA428323D3FADBD5D52723BBF1379184650DA5CE6002B2BF" == sm3hex, "sm3hmac == " .. sm3hex)
+   local sm3val = lz.sm3("lqlq666lqlq946")
+   local sm3hex =    tohex(sm3val)
+   ok("E64FD76F4078E51DCA428323D3FADBD5D52723BBF1379184650DA5CE6002B2BF" == sm3hex, "sm3hmac HEX == " .. sm3hex)
+   local sm3base64 = lz.base64_encode(sm3val)
+   ok("5k/Xb0B45R3KQoMj0/rb1dUnI7vxN5GEZQ2lzmACsr8=" == sm3base64, "sm3hmac BASE64 == " .. sm3base64)
 end
 
 
 local function test_sm3hmac() 
-   local encodeStr = lz.sm3hmac("lqlq666lqlq946", "123")
-   local sm3hex =    tohex(encodeStr)
+   local sm3val = lz.sm3hmac("lqlq666lqlq946", "123")
+   local sm3hex =    tohex(sm3val)
    ok("FBB67FC936777011AA70336F0F0B6305D529A97A87D8ECA8880472CD2C30A721" == sm3hex, "sm3hmac == " .. sm3hex)
+   local sm3base64 = lz.base64_encode(sm3val)
+   ok("+7Z/yTZ3cBGqcDNvDwtjBdUpqXqH2OyoiARyzSwwpyE=" == sm3base64, "sm3hmac BASE64 == " .. sm3base64)
+end
+
+local function test_sm3hmac_base64() 
+   local sm3val = lz.sm3hmac_base64("lqlq666lqlq946", "123")
+   ok("+7Z/yTZ3cBGqcDNvDwtjBdUpqXqH2OyoiARyzSwwpyE=" == sm3val, "sm3hmac_base64 == " .. sm3val)
 end
 
 local function main()
@@ -218,6 +227,7 @@ local function main()
    test_amnon_david()
    test_sm3()
    test_sm3hmac()
+   test_sm3hmac_base64()
 end
 
 main()
