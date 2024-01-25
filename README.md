@@ -7,23 +7,18 @@
    2. ubunto `dpkg -l | grep zlib`
 2. To build this library, you can use [CMake](http://www.cmake.org), or you can use GNU Make: `make <platform>`
    1. download [cmake binnary](https://github.com/Kitware/CMake/releases/download/v3.28.1/cmake-3.28.1-linux-x86_64.tar.gz)
-   2. e.g. `cmake -DLUA_INCLUDE_DIR=/home/app/bingoohuang/luajit2/include/luajit-2.1 -DLUA_LIBRARIES=/home/app/bingoohuang/luajit2/lib -DUSE_LUAJIT=ON -DUSE_LUA=OFF`  thanks[lua-zlib模块安装、使用](https://blog.51cto.com/u_5650011/5394910)
+   2. e.g. `cmake -DLUA_INCLUDE_DIR=/home/app/bingoohuang/luajit2/include/luajit-2.1 -DLUA_LIBRARIES=/home/app/bingoohuang/luajit2/lib -DUSE_LUAJIT=ON -DUSE_LUA=OFF`  thanks [lua-zlib模块安装、使用](https://blog.51cto.com/u_5650011/5394910)
 
 ## usage
 
-Loading the library:
+Loading the library， If you built the library as a loadable package
 
-    If you built the library as a loadable package
-
-```lua
-    [local] zlib = require 'zlib'
-```
+`local zlib = require 'zlib'`
 
 If you compiled the package statically into your application, call
 the function `luaopen_zlib(L)`. It will create a table with the zlib
 functions and leave it on the stack.
 
-### -- zlib functions --
 
 `int major, int minor, int patch = zlib.version()`
 
@@ -71,7 +66,7 @@ The bytes_in is how many bytes of input have been passed to
 stream, and bytes_out is the number of bytes returned in
 deflated string chunks.
 
-`function stream = zlib.inflate([int windowBits])`
+- `function stream = zlib.inflate([int windowBits])`
 
 Returns a "stream" function that decompresses (or inflates) all
 strings passed in.  Optionally specify a windowBits argument
@@ -125,9 +120,8 @@ while true do
 end
 ```
 
-`function compute_checksum = zlib.adler32()`
-
-`function compute_checksum = zlib.crc32()`
+- `function compute_checksum = zlib.adler32()`
+- `function compute_checksum = zlib.crc32()`
 
 Create a new checksum computation function using either the
 adler32 or crc32 algorithms.  This resulting function should be
