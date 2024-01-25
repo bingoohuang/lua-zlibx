@@ -192,14 +192,14 @@ end
 local function test_sm3() 
    local encodeStr = lz.sm3("lqlq666lqlq946")
    local sm3hex =    tohex(encodeStr)
-   ok("E64FD76F4078E51DCA428323D3FADBD5D52723BBF1379184650DA5CE6002B2BF", sm3hex, "sm3hmac == " .. sm3hex)
+   ok("E64FD76F4078E51DCA428323D3FADBD5D52723BBF1379184650DA5CE6002B2BF" == sm3hex, "sm3hmac == " .. sm3hex)
 end
 
 
 local function test_sm3hmac() 
    local encodeStr = lz.sm3hmac("lqlq666lqlq946", "123")
    local sm3hex =    tohex(encodeStr)
-   ok("FBB67FC936777011AA70336F0F0B6305D529A97A87D8ECA8880472CD2C30A721", sm3hex, "sm3hmac == " .. sm3hex)
+   ok("FBB67FC936777011AA70336F0F0B6305D529A97A87D8ECA8880472CD2C30A721" == sm3hex, "sm3hmac == " .. sm3hex)
 end
 
 local function main()
