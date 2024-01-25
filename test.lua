@@ -183,6 +183,25 @@ local function test_version()
    ok(type(patch) == "number", "patch version is number (" .. patch .. ")")
 end
 
+function tohex(str)
+   return (str:gsub('.', function (c)
+       return string.format('%02X', string.byte(c))
+   end))
+end
+
+local function test_sm3() 
+   local encodeStr = lz.sm3("lqlq666lqlq946")
+   local sm3hex =    tohex(encodeStr)
+   ok("E64FD76F4078E51DCA428323D3FADBD5D52723BBF1379184650DA5CE6002B2BF", sm3hex, "sm3hmac == " .. sm3hex)
+end
+
+
+local function test_sm3hmac() 
+   local encodeStr = lz.sm3hmac("lqlq666lqlq946", "123")
+   local sm3hex =    tohex(encodeStr)
+   ok("FBB67FC936777011AA70336F0F0B6305D529A97A87D8ECA8880472CD2C30A721", sm3hex, "sm3hmac == " .. sm3hex)
+end
+
 local function main()
    test_stats()
    test_buff_err()
@@ -197,6 +216,8 @@ local function main()
    test_version()
    test_tom_macwright()
    test_amnon_david()
+   test_sm3()
+   test_sm3hmac()
 end
 
 main()

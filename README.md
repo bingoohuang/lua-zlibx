@@ -168,3 +168,40 @@ however if this value is used with calls to adler32 it works in
 compatibility mode.
 
 To use this shim add the `-DLZLIB_COMPAT` compiler flag.
+
+## sm3/sm3hmac
+
+- `local sm3 = lz.sm3("lqlq666lqlq946")`
+- `local sm3hmac = lz.sm3hmac("lqlq666lqlq946", "123")`
+
+
+examples:
+
+```lua
+function tohex(str)
+    return (str:gsub('.', function (c)
+        return string.format('%02X', string.byte(c))
+    end))
+end
+
+local sm3 = lz.sm3("lqlq666lqlq946")
+print(tohex(sm3))
+-- E64FD76F4078E51DCA428323D3FADBD5D52723BBF1379184650DA5CE6002B2BF
+ 
+local sm3hmac = lz.sm3hmac("lqlq666lqlq946", "123")
+print(tohex(sm3hmac))
+-- FBB67FC936777011AA70336F0F0B6305D529A97A87D8ECA8880472CD2C30A721
+```
+
+use ggt to check it
+
+```sh
+$ ggt sm3 -i lqlq666lqlq946    
+sm3 lqlq666lql... => E64FD76F4078E51DCA428323D3FADBD5D52723BBF1379184650DA5CE6002B2BF len:64
+
+$ KEY=123 ggt sm3 -i lqlq666lqlq946
+sm3 lqlq666lql... => FBB67FC936777011AA70336F0F0B6305D529A97A87D8ECA8880472CD2C30A721 len:64
+```
+
+- thanks [sm3 c](https://github.com/guanzhi/GmSSL)
+- thanks [sm3-lua-bind](https://github.com/openLuat/LuatOS/tree/master/components/gmssl)
