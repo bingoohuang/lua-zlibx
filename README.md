@@ -7,7 +7,7 @@
    2. ubunto `dpkg -l | grep zlib`
 2. To build this library, you can use [CMake](http://www.cmake.org), or you can use GNU Make: `make <platform>`
    1. download [cmake binnary](https://github.com/Kitware/CMake/releases/download/v3.28.1/cmake-3.28.1-linux-x86_64.tar.gz)
-   2. e.g. `cmake -DLUA_INCLUDE_DIR=/home/app/bingoohuang/luajit2/include/luajit-2.1 -DLUA_LIBRARIES=/home/app/bingoohuang/luajit2/lib -DUSE_LUAJIT=ON -DUSE_LUA=OFF`
+   2. e.g. `cmake -DLUA_INCLUDE_DIR=/home/app/bingoohuang/luajit2/include/luajit-2.1 -DLUA_LIBRARIES=/home/app/bingoohuang/luajit2/lib -DUSE_LUAJIT=ON -DUSE_LUA=OFF`  thanks[lua-zlib模块安装、使用](https://blog.51cto.com/u_5650011/5394910)
 
 ## usage
 
