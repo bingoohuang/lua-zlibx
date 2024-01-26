@@ -224,3 +224,8 @@ checkit in [test.lua](./test.lua#L238)
 #a:     332     #b:     32      sm3hmac_base64(a, b):   kVQjPJwA1JZmrDSNsE/ALI01f1okExR4WCeGFJQBn0E=
 Total execution 1000000 times in 3.250124 seconds
 ```
+
+Thanks:
+
+- [Some Tests. Lua Performance 一些测试。Lua 性能](https://forum.defold.com/t/some-tests-lua-performance/70782)
+- [Lua脚本性能优化指南](https://github.com/flily/lua-performance/blob/master/Guide.zh.md)

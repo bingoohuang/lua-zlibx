@@ -235,6 +235,9 @@ function random_string(length)
     return random_string
 end
 
+-- [Some Tests. Lua Performance 一些测试。Lua 性能](https://forum.defold.com/t/some-tests-lua-performance/70782)
+-- [Lua脚本性能优化指南](https://github.com/flily/lua-performance/blob/master/Guide.zh.md)
+
 local function test_sm3hmac_base64_bench()
     local a = random_string(332)
     local b = random_string(32)
