@@ -218,11 +218,12 @@ sm3 lqlq666lql... => -7Z_yTZ3cBGqcDNvDwtjBdUpqXqH2OyoiARyzSwwpyE len:43
 
 ### sm3hmac_base64 performance
 
-checkit in [test.lua](./test.lua#L238)
+checkit in [test.lua](./test.lua#L267)
 
 ```sh
 #a:     332     #b:     32      sm3hmac_base64(a, b):   kVQjPJwA1JZmrDSNsE/ALI01f1okExR4WCeGFJQBn0E=
-Total execution 1000000 times in 3.250124 seconds
+Total execution 1000000 times in 3.062802 seconds
+Benchmark results: 1000000 function calls | 3088145.00 μs elapsed | 3.09 μs avg execution time.
 ```
 
 Thanks:
