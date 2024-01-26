@@ -215,3 +215,12 @@ sm3 lqlq666lql... => -7Z_yTZ3cBGqcDNvDwtjBdUpqXqH2OyoiARyzSwwpyE len:43
 - thanks [sm3 c](https://github.com/guanzhi/GmSSL)
 - thanks [sm3-lua-bind](https://github.com/openLuat/LuatOS/tree/master/components/gmssl)
 - thanks [base64 c](https://github.com/sniperHW/chuck/blob/master/src/util/base64.c) [base64 lua-bind](https://github.com/sniperHW/chuck/blob/master/src/luabind/base64.h)
+
+### sm3hmac_base64 performance
+
+checkit in [test.lua](./test.lua#L238)
+
+```sh
+#a:     332     #b:     32      sm3hmac_base64(a, b):   kVQjPJwA1JZmrDSNsE/ALI01f1okExR4WCeGFJQBn0E=
+Total execution 1000000 times in 3.250124 seconds
+```
