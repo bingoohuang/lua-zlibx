@@ -190,7 +190,7 @@ local function test_version()
     local major, minor, patch = lz.version()
     ok(1 == major, "major version 1 == " .. major);
     ok(type(minor) == "number", "minor version is number (" .. minor .. ")")
-    ok(type(patch) == "number", "patch version is number (" .. patch .. ")")
+    ok(type(patch) == "number", "patch version is number (" .. (patch == nil and 'nil' or patch) .. ")")
 end
 
 function tohex(str)
