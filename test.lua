@@ -211,6 +211,12 @@ local function test_sm3hmac_base64()
    ok("+7Z/yTZ3cBGqcDNvDwtjBdUpqXqH2OyoiARyzSwwpyE=" == sm3val, "sm3hmac_base64 == " .. sm3val)
 end
 
+local function test_sm3hmac_base64_url() 
+   local sm3val = lz.sm3hmac_base64_url("lqlq666lqlq946", "123")
+   ok("-7Z_yTZ3cBGqcDNvDwtjBdUpqXqH2OyoiARyzSwwpyE" == sm3val, "sm3hmac_base64_url == " .. sm3val)
+end
+
+
 local function main()
    test_stats()
    test_buff_err()
@@ -228,6 +234,7 @@ local function main()
    test_sm3()
    test_sm3hmac()
    test_sm3hmac_base64()
+   test_sm3hmac_base64_url()
 end
 
 main()

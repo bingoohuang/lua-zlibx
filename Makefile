@@ -60,3 +60,7 @@ clean:
 
 $(CMOD): $(OBJS)
 	$(LD) $(LDFLAGS) $(LIBDIR) $(OBJS) $(LIBS) -o $@
+
+test: clean
+	INCDIR="-I/usr/local/include/lua" make macosx
+	lua test.lua

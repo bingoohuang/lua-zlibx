@@ -171,10 +171,18 @@ To use this shim add the `-DLZLIB_COMPAT` compiler flag.
 
 - `local sm3 = lz.sm3("lqlq666lqlq946")`
 - `local sm3_base64 = lz.sm3_base64("lqlq666lqlq946")`
+- `local sm3_base64_url = lz.sm3_base64_url("lqlq666lqlq946")`
+
 - `local sm3hmac = lz.sm3hmac("lqlq666lqlq946", "123")`
 - `local sm3hmac_base64 = lz.sm3hmac_base64("lqlq666lqlq946", "123")`
+- `local sm3hmac_base64_url = lz.sm3hmac_base64_url("lqlq666lqlq946", "123")`
+
 - `local encoded = lz.base64_encode(raw)`
 - `local raw = lz.base64_decode(encoded)`
+
+
+- `local encoded = lz.base64_encode_url(raw)`
+- `local raw = lz.base64_decode_url(encoded)`
 
 examples:
 
@@ -185,24 +193,25 @@ function tohex(str)
     end))
 end
 
-local sm3 = lz.sm3("lqlq666lqlq946")
-print(tohex(sm3))
--- E64FD76F4078E51DCA428323D3FADBD5D52723BBF1379184650DA5CE6002B2BF
+local sm3 = lz.sm3_base64("lqlq666lqlq946")
+print(sm3)
+-- 5k/Xb0B45R3KQoMj0/rb1dUnI7vxN5GEZQ2lzmACsr8=
  
-local sm3hmac = lz.sm3hmac("lqlq666lqlq946", "123")
-print(tohex(sm3hmac))
--- FBB67FC936777011AA70336F0F0B6305D529A97A87D8ECA8880472CD2C30A721
+local sm3hmac = lz.sm3hmac_base64("lqlq666lqlq946", "123")
+print(sm3hmac)
+-- +7Z/yTZ3cBGqcDNvDwtjBdUpqXqH2OyoiARyzSwwpyE=
 ```
 
 use ggt to check it
 
 ```sh
-$ ggt sm3 -i lqlq666lqlq946    
-sm3 lqlq666lql... => E64FD76F4078E51DCA428323D3FADBD5D52723BBF1379184650DA5CE6002B2BF len:64
+$ ggt sm3 -i lqlq666lqlq946 --base64
+sm3 lqlq666lql... => 5k_Xb0B45R3KQoMj0_rb1dUnI7vxN5GEZQ2lzmACsr8 len:43
 
-$ KEY=123 ggt sm3 -i lqlq666lqlq946
-sm3 lqlq666lql... => FBB67FC936777011AA70336F0F0B6305D529A97A87D8ECA8880472CD2C30A721 len:64
+$ KEY=123 ggt sm3 -i lqlq666lqlq946 --base64
+sm3 lqlq666lql... => -7Z_yTZ3cBGqcDNvDwtjBdUpqXqH2OyoiARyzSwwpyE len:43
 ```
 
 - thanks [sm3 c](https://github.com/guanzhi/GmSSL)
 - thanks [sm3-lua-bind](https://github.com/openLuat/LuatOS/tree/master/components/gmssl)
+- thanks [base64 c](https://github.com/sniperHW/chuck/blob/master/src/util/base64.c) [base64 lua-bind](https://github.com/sniperHW/chuck/blob/master/src/luabind/base64.h)

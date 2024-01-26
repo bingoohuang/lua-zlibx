@@ -1,111 +1,222 @@
+// https://github.com/sniperHW/chuck/blob/master/src/luabind/base64.h#L22
+// https://github.com/sniperHW/chuck/blob/master/src/util/base64.c#L47
 
-#define uint unsigned int
+#define base64_encoded_length(len) (((len + 2) / 3) * 4)
+#define base64_decoded_length(len) (((len + 3) / 4) * 3)
 
-static const char code[] =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
-static void encode(luaL_Buffer *b, uint c1, uint c2, uint c3, int n)
+static int base64_encode_internal(unsigned char *dst, const unsigned char *src, int len, const unsigned char *basis,
+                                  int padding)
 {
-    unsigned long tuple = c3 + 256UL * (c2 + 256UL * c1);
-    int i;
-    char s[4];
-    for (i = 0; i < 4; i++)
-    {
-        s[3 - i] = code[tuple % 64];
-        tuple /= 64;
+    unsigned char *d;
+    const unsigned char *s;
+    s = src;
+    d = dst;
+
+    while(len > 2) {
+        *d++ = basis[(s[0] >> 2) & 0x3f];
+        *d++ = basis[((s[0] & 3) << 4) | (s[1] >> 4)];
+        *d++ = basis[((s[1] & 0x0f) << 2) | (s[2] >> 6)];
+        *d++ = basis[s[2] & 0x3f];
+        s += 3;
+        len -= 3;
     }
-    for (i = n + 1; i < 4; i++)
-        s[i] = '=';
-    luaL_addlstring(b, s, 4);
+
+    if(len) {
+        *d++ = basis[(s[0] >> 2) & 0x3f];
+
+        if(len == 1) {
+            *d++ = basis[(s[0] & 3) << 4];
+            *d++ = '=';
+
+        } else {
+            *d++ = basis[((s[0] & 3) << 4) | (s[1] >> 4)];
+            *d++ = basis[(s[1] & 0x0f) << 2];
+        }
+
+        if(padding) {
+            *d++ = '=';
+        }
+    }
+
+    return d - dst;
 }
 
-static int lbase64_encode(lua_State *L) /** encode(s) */
+int base64_encode(unsigned char *dst, const unsigned char *src, int len)
 {
-    size_t l;
-    const unsigned char *s = (const unsigned char *)luaL_checklstring(L, 1, &l);
-    luaL_Buffer b;
-    int n;
-    luaL_buffinit(L, &b);
-    for (n = l / 3; n--; s += 3)
-        encode(&b, s[0], s[1], s[2], 3);
-    switch (l % 3)
-    {
-    case 1:
-        encode(&b, s[0], 0, 0, 1);
-        break;
-    case 2:
-        encode(&b, s[0], s[1], 0, 2);
-        break;
+    static unsigned char basis64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+    return base64_encode_internal(dst, src, len, basis64, 1);
+}
+
+int base64_encode_url(unsigned char *dst, const unsigned char *src, int len)
+{
+    static unsigned char basis64_url[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+
+    return base64_encode_internal(dst, src, len, basis64_url, 0);
+}
+
+static int base64_decode_internal(unsigned char *dst, const unsigned char *src, size_t slen, const unsigned char *basis)
+{
+    size_t len;
+    unsigned char *d;
+    const unsigned char *s;
+
+    for(len = 0; len < slen; len++) {
+        if(src[len] == '=') {
+            break;
+        }
+
+        if(basis[src[len]] == 77) {
+            return 0;
+        }
     }
-    luaL_pushresult(&b);
+
+    if(len % 4 == 1) {
+        return 0;
+    }
+
+    s = src;
+    d = dst;
+
+    while(len > 3) {
+        *d++ = (char)(basis[s[0]] << 2 | basis[s[1]] >> 4);
+        *d++ = (char)(basis[s[1]] << 4 | basis[s[2]] >> 2);
+        *d++ = (char)(basis[s[2]] << 6 | basis[s[3]]);
+        s += 4;
+        len -= 4;
+    }
+
+    if(len > 1) {
+        *d++ = (char)(basis[s[0]] << 2 | basis[s[1]] >> 4);
+    }
+
+    if(len > 2) {
+        *d++ = (char)(basis[s[1]] << 4 | basis[s[2]] >> 2);
+    }
+
+    return d - dst;
+}
+
+int base64_decode(unsigned char *dst, const unsigned char *src, size_t slen)
+{
+    static unsigned char basis64[] = {
+        77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77,
+        77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77,
+        77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 62, 77, 77, 77, 63,
+        52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 77, 77, 77, 77, 77, 77,
+        77, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+        15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 77, 77, 77, 77, 77,
+        77, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+        41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 77, 77, 77, 77, 77,
+
+        77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77,
+        77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77,
+        77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77,
+        77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77,
+        77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77,
+        77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77,
+        77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77,
+        77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77
+    };
+    return base64_decode_internal(dst, src, slen, basis64);
+}
+
+int base64_decode_url(unsigned char *dst, const unsigned char *src, size_t slen)
+{
+    static unsigned char basis64[] = {
+        77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77,
+        77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77,
+        77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 62, 77, 77,
+        52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 77, 77, 77, 77, 77, 77,
+        77, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
+        15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 77, 77, 77, 77, 63,
+        77, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+        41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 77, 77, 77, 77, 77,
+
+        77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77,
+        77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77,
+        77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77,
+        77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77,
+        77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77,
+        77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77,
+        77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77,
+        77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77
+    };
+    return base64_decode_internal(dst, src, slen, basis64);
+}
+
+int lua_f_base64_encode(lua_State *L)
+{
+    const unsigned char *src = NULL;
+    size_t slen = 0;
+
+    if(lua_isnil(L, 1)) {
+        src = (const unsigned char *) "";
+
+    } else {
+        src = (const unsigned char *) luaL_checklstring(L, 1, &slen);
+    }
+
+    unsigned char *end = malloc(base64_encoded_length(slen));
+    int nlen = base64_encode(end, src, slen);
+    lua_pushlstring(L, (char *) end, nlen);
+    free(end);
     return 1;
 }
 
-static void decode(luaL_Buffer *b, int c1, int c2, int c3, int c4, int n)
+int lua_f_base64_decode(lua_State *L)
 {
-    unsigned long tuple = c4 + 64L * (c3 + 64L * (c2 + 64L * c1));
-    char s[3];
-    switch (--n)
-    {
-    case 3:
-        s[2] = tuple;
-    case 2:
-        s[1] = tuple >> 8;
-    case 1:
-        s[0] = tuple >> 16;
+    const unsigned char *src = NULL;
+    size_t slen = 0;
+
+    if(lua_isnil(L, 1)) {
+        src = (const unsigned char *) "";
+
+    } else {
+        src = (unsigned char *) luaL_checklstring(L, 1, &slen);
     }
-    luaL_addlstring(b, s, n);
+
+    unsigned char *end = malloc(base64_decoded_length(slen));
+    int nlen = base64_decode(end, src, slen);
+    lua_pushlstring(L, (char *) end, nlen);
+    free(end);
+    return 1;
 }
 
-static int lbase64_decode(lua_State *L) /** decode(s) */
+int lua_f_base64_encode_url(lua_State *L)
 {
-    size_t l;
-    const char *s = luaL_checklstring(L, 1, &l);
-    luaL_Buffer b;
-    int n = 0;
-    char t[4];
-    luaL_buffinit(L, &b);
-    for (;;)
-    {
-        int c = *s++;
-        switch (c)
-        {
-            const char *p;
-        default:
-            p = strchr(code, c);
-            if (p == NULL)
-                return 0;
-            t[n++] = p - code;
-            if (n == 4)
-            {
-                decode(&b, t[0], t[1], t[2], t[3], 4);
-                n = 0;
-            }
-            break;
-        case '=':
-            switch (n)
-            {
-            case 1:
-                decode(&b, t[0], 0, 0, 0, 1);
-                break;
-            case 2:
-                decode(&b, t[0], t[1], 0, 0, 2);
-                break;
-            case 3:
-                decode(&b, t[0], t[1], t[2], 0, 3);
-                break;
-            }
-        case 0:
-            luaL_pushresult(&b);
-            return 1;
-        case '\n':
-        case '\r':
-        case '\t':
-        case ' ':
-        case '\f':
-        case '\b':
-            break;
-        }
+    const unsigned char *src = NULL;
+    size_t slen = 0;
+
+    if(lua_isnil(L, 1)) {
+        src = (const unsigned char *) "";
+
+    } else {
+        src = (const unsigned char *) luaL_checklstring(L, 1, &slen);
     }
-    return 0;
+
+    unsigned char *end = malloc(base64_encoded_length(slen));
+    int nlen = base64_encode_url(end, src, slen);
+    lua_pushlstring(L, (char *) end, nlen);
+    free(end);
+    return 1;
+}
+
+int lua_f_base64_decode_url(lua_State *L)
+{
+    const unsigned char *src = NULL;
+    size_t slen = 0;
+
+    if(lua_isnil(L, 1)) {
+        src = (const unsigned char *) "";
+
+    } else {
+        src = (unsigned char *) luaL_checklstring(L, 1, &slen);
+    }
+
+    unsigned char *end = malloc(base64_decoded_length(slen));
+    int nlen = base64_decode_url(end, src, slen);
+    lua_pushlstring(L, (char *) end, nlen);
+    free(end);
+    return 1;
 }

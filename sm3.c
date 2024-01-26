@@ -395,6 +395,8 @@ static int l_sm3_update(lua_State *L)
 	return 1;
 }
 
+#define large_malloc(s) (malloc(((int)(s / 4096) + 1) * 4096))
+
 static int l_sm3_update_base64(lua_State *L)
 {
 	size_t inputLen = 0;
@@ -404,7 +406,23 @@ static int l_sm3_update_base64(lua_State *L)
 
 	size_t slen = SM3_DIGEST_LENGTH;
 	unsigned char *end = large_malloc(base64_encoded_length(slen));
-	int nlen = base64_encode(dgst, slen, end);
+	int nlen = base64_encode(end, dgst, slen);
+	lua_pushlstring(L, (char *)end, nlen);
+	free(end);
+
+	return 1;
+}
+
+static int l_sm3_update_base64_url(lua_State *L)
+{
+	size_t inputLen = 0;
+	uint8_t dgst[SM3_DIGEST_LENGTH];
+	const char *inputData = lua_tolstring(L, 1, &inputLen);
+	sm3_digest((uint8_t *)inputData, inputLen, dgst);
+
+	size_t slen = SM3_DIGEST_LENGTH;
+	unsigned char *end = large_malloc(base64_encoded_length(slen));
+	int nlen = base64_encode_url(end, dgst, slen);
 	lua_pushlstring(L, (char *)end, nlen);
 	free(end);
 
@@ -445,7 +463,24 @@ static int l_sm3hmac_update_base64(lua_State *L)
 
 	size_t slen = SM3_DIGEST_LENGTH;
 	unsigned char *end = large_malloc(base64_encoded_length(slen));
-	int nlen = base64_encode(dgst, slen, end);
+	int nlen = base64_encode(end, dgst, slen);
+	lua_pushlstring(L, (char *)end, nlen);
+	free(end);
+	return 1;
+}
+
+static int l_sm3hmac_update_base64_url(lua_State *L)
+{
+	size_t inputLen = 0;
+	size_t keyLen = 0;
+	uint8_t dgst[SM3_DIGEST_LENGTH];
+	const char *inputData = lua_tolstring(L, 1, &inputLen);
+	const char *keyData = lua_tolstring(L, 2, &keyLen);
+	sm3_hmac((uint8_t *)keyData, keyLen, (uint8_t *)inputData, inputLen, dgst);
+
+	size_t slen = SM3_DIGEST_LENGTH;
+	unsigned char *end = large_malloc(base64_encoded_length(slen));
+	int nlen = base64_encode_url(end, dgst, slen);
 	lua_pushlstring(L, (char *)end, nlen);
 	free(end);
 	return 1;
