@@ -235,6 +235,33 @@ function random_string(length)
     return random_string
 end
 
+local units = {
+    ['seconds'] = 1,
+    ['milliseconds'] = 1000,
+    ['microseconds'] = 1000000,
+    ['nanoseconds'] = 1000000000
+}
+
+-- How to run tests: Wrap the code you want to test inside of a function, and pass it to the benchmark function.
+-- https://otland.net/threads/benchmarking-your-code-in-lua.265961/
+-- benchmark:
+-- param @unit : Unit of time to view elapsed time in, see local units table for the list of units.
+-- param @decPlaces : Number of decimal places for the elapsed time output
+-- param @n : Number of times to run the function
+-- param @f : The function to benchmark
+-- param @... : All arguments passed to function f
+function benchmark(unit, decPlaces, n, f, ...)
+    local elapsed = 0
+    local multiplier = units[unit]
+    local now = os.clock()
+    for i = 1, n do
+        f(...)
+    end
+    elapsed = elapsed + (os.clock() - now)
+    print(string.format('Benchmark results: %d function calls | %.' .. decPlaces .. 'f %s elapsed | %.' .. decPlaces ..
+                            'f %s avg execution time.', n, elapsed * multiplier, unit, (elapsed / n) * multiplier, unit))
+end
+
 -- [Some Tests. Lua Performance 一些测试。Lua 性能](https://forum.defold.com/t/some-tests-lua-performance/70782)
 -- [Lua脚本性能优化指南](https://github.com/flily/lua-performance/blob/master/Guide.zh.md)
 
@@ -251,6 +278,13 @@ local function test_sm3hmac_base64_bench()
     end
     local total_time = os.clock() - start_time
     print("Total execution " .. N .. " times in " .. total_time .. " seconds")
+
+    function test()
+        local sm3val = lz.sm3hmac_base64(a, b)
+    end
+
+    benchmark('microseconds', 2, 1000000, test)
+    -- Benchmark results: 1000000 function calls | 2997643.00 microseconds elapsed | 3.00 microseconds avg execution time.
 end
 
 local function main()
