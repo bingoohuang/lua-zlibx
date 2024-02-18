@@ -106,7 +106,7 @@ Example:
 local source = io.open"allparts.gz"
 local dest = io.tmpfile()
 
-local inflate = lz.inflate()
+local inflate = zlib.inflate()
 local shift = 0
 while true do
     local data = source:read(4096) -- read in 4K chunks
@@ -116,7 +116,7 @@ while true do
     if eos then                    -- end of current stream
         source:seek("set", shift + bytes_in)
         shift = shift + bytes_in   -- update shift
-        inflate = lz.inflate()     -- new inflate per stream
+        inflate = zlib.inflate()     -- new inflate per stream
     end
 end
 ```
@@ -170,20 +170,20 @@ To use this shim add the `-DLZLIB_COMPAT` compiler flag.
 
 ## sm3/sm3hmac
 
-- `local sm3 = lz.sm3("lqlq666lqlq946")`
-- `local sm3_base64 = lz.sm3_base64("lqlq666lqlq946")`
-- `local sm3_base64_url = lz.sm3_base64_url("lqlq666lqlq946")`
+- `local sm3 = zlib.sm3("lqlq666lqlq946")`
+- `local sm3_base64 = zlib.sm3_base64("lqlq666lqlq946")`
+- `local sm3_base64_url = zlib.sm3_base64_url("lqlq666lqlq946")`
 
-- `local sm3hmac = lz.sm3hmac("lqlq666lqlq946", "123")`
-- `local sm3hmac_base64 = lz.sm3hmac_base64("lqlq666lqlq946", "123")`
-- `local sm3hmac_base64_url = lz.sm3hmac_base64_url("lqlq666lqlq946", "123")`
+- `local sm3hmac = zlib.sm3hmac("lqlq666lqlq946", "123")`
+- `local sm3hmac_base64 = zlib.sm3hmac_base64("lqlq666lqlq946", "123")`
+- `local sm3hmac_base64_url = zlib.sm3hmac_base64_url("lqlq666lqlq946", "123")`
 
-- `local encoded = lz.base64_encode(raw)`
-- `local raw = lz.base64_decode(encoded)`
+- `local encoded = zlib.base64_encode(raw)`
+- `local raw = zlib.base64_decode(encoded)`
 
 
-- `local encoded = lz.base64_encode_url(raw)`
-- `local raw = lz.base64_decode_url(encoded)`
+- `local encoded = zlib.base64_encode_url(raw)`
+- `local raw = zlib.base64_decode_url(encoded)`
 
 examples:
 
@@ -194,11 +194,11 @@ function tohex(str)
     end))
 end
 
-local sm3 = lz.sm3_base64("lqlq666lqlq946")
+local sm3 = zlib.sm3_base64("lqlq666lqlq946")
 print(sm3)
 -- 5k/Xb0B45R3KQoMj0/rb1dUnI7vxN5GEZQ2lzmACsr8=
  
-local sm3hmac = lz.sm3hmac_base64("lqlq666lqlq946", "123")
+local sm3hmac = zlib.sm3hmac_base64("lqlq666lqlq946", "123")
 print(sm3hmac)
 -- +7Z/yTZ3cBGqcDNvDwtjBdUpqXqH2OyoiARyzSwwpyE=
 ```
