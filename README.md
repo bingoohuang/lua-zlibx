@@ -139,13 +139,13 @@ To use this shim add the `-DLZLIB_COMPAT` compiler flag.
 
 ## sm3/sm3hmac
 
-- `local sm3 = zlib.sm3("lqlq666lqlq946")`
-- `local sm3_base64 = zlib.sm3_base64("lqlq666lqlq946")`
-- `local sm3_base64_url = zlib.sm3_base64_url("lqlq666lqlq946")`
+- `local sm3 = zlib.sm3("data_lqlq666lqlq946")`
+- `local sm3_base64 = zlib.sm3_base64("data_lqlq666lqlq946")`
+- `local sm3_base64_url = zlib.sm3_base64_url("data_lqlq666lqlq946")`
 
-- `local sm3hmac = zlib.sm3hmac("lqlq666lqlq946", "123")`
-- `local sm3hmac_base64 = zlib.sm3hmac_base64("lqlq666lqlq946", "123")`
-- `local sm3hmac_base64_url = zlib.sm3hmac_base64_url("lqlq666lqlq946", "123")`
+- `local sm3hmac = zlib.sm3hmac("data_lqlq666lqlq946", "key_123")`
+- `local sm3hmac_base64 = zlib.sm3hmac_base64("data_lqlq666lqlq946", "key_123")`
+- `local sm3hmac_base64_url = zlib.sm3hmac_base64_url("data_lqlq666lqlq946", "key_123")`
 
 - `local encoded = zlib.base64_encode(raw)`
 - `local raw = zlib.base64_decode(encoded)`
@@ -182,29 +182,25 @@ assert(res == "foo")
 examples:
 
 ```lua
-function tohex(str)
-    return (str:gsub('.', function (c)
-        return string.format('%02X', string.byte(c))
-    end))
-end
+local lz = require("zlib")
 
-local sm3 = zlib.sm3_base64("lqlq666lqlq946")
+local sm3 = lz.sm3_base64("data_lqlq666lqlq946")
 print(sm3)
--- 5k/Xb0B45R3KQoMj0/rb1dUnI7vxN5GEZQ2lzmACsr8=
- 
-local sm3hmac = zlib.sm3hmac_base64("lqlq666lqlq946", "123")
+-- H9Yuyh2qqGFlYC/HEKl0Ir809GOYuECfLoiRO1sUZDA=
+
+local sm3hmac = lz.sm3hmac_base64("data_lqlq666lqlq946", "key_123")
 print(sm3hmac)
--- +7Z/yTZ3cBGqcDNvDwtjBdUpqXqH2OyoiARyzSwwpyE=
+-- 8IPopN0cpqHinIkPb0bXTqnq+suVlVYEeCjGbHGlDTk=
 ```
 
 use ggt to check it
 
 ```sh
-$ ggt sm3 -i lqlq666lqlq946 --base64
-sm3 lqlq666lql... => 5k_Xb0B45R3KQoMj0_rb1dUnI7vxN5GEZQ2lzmACsr8 len:43
+$ ggt sm3 -i data_lqlq666lqlq946 --base64
+sm3 data_lqlq6... => H9Yuyh2qqGFlYC_HEKl0Ir809GOYuECfLoiRO1sUZDA len:43
 
-$ KEY=123 ggt sm3 -i lqlq666lqlq946 --base64
-sm3 lqlq666lql... => -7Z_yTZ3cBGqcDNvDwtjBdUpqXqH2OyoiARyzSwwpyE len:43
+$ KEY=key_123 ggt sm3 -i data_lqlq666lqlq946 --base64
+sm3 data_lqlq6... => 8IPopN0cpqHinIkPb0bXTqnq-suVlVYEeCjGbHGlDTk len:43
 ```
 
 - thanks [sm3 c](https://github.com/guanzhi/GmSSL)
